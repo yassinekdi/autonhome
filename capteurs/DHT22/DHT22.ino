@@ -1,8 +1,8 @@
 #include <DHT.h>
-
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <FirebaseESP32.h>
+#include <time.h>
 
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
@@ -17,7 +17,6 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-
   // Connexion WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
@@ -29,15 +28,20 @@ void setup() {
   // Connexion à Firebase
   Firebase.begin(FIREBASE_HOST,FIREBASE_AUTH);
 
-  // Startint DHT
+  // Starting DHT
   dht.begin();
   delay(2000); 
+
+  // Configuring time
+  configTime(0, 0, "pool.ntp.org");  // Configure NTP
+  delay(1000);
 }
 
 void sendDataToFirebase(float temperature, float humidity){
   FirebaseJson jsonDoc;
   jsonDoc.set("temperature", temperature);
   jsonDoc.set("humidity", humidity);
+  jsonDoc.set("timestamp", time(nullptr));  // Add current timestamp
 
   String path = "/air_monitoring";
   if (Firebase.pushJSON(firebaseData, path, jsonDoc)) {
@@ -65,5 +69,4 @@ void loop() {
   sendDataToFirebase(temp,humidity);
 
   delay(10000);
-
 }
