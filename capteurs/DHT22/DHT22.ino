@@ -4,11 +4,11 @@
 #include <ArduinoJson.h>
 #include <FirebaseESP32.h>
 
-const char* WIFI_SSID = "Bbox-32BE8614";
-const char* WIFI_PASSWORD = "PcPQPfmPXTqVShDF6F";
+const char* WIFI_SSID = "";
+const char* WIFI_PASSWORD = "";
 
-String FIREBASE_HOST = "https://autonhome-af7ba-default-rtdb.europe-west1.firebasedatabase.app/";
-String FIREBASE_AUTH = "idCrjvKYAhGFV56Yfnx8FbGtEzBDOzDGuvA40v7L";
+String FIREBASE_HOST = "";
+String FIREBASE_AUTH = "";
 
 FirebaseData firebaseData;
 DHT dht(33, DHT22);
