@@ -2,3 +2,4 @@
 backend/autonhome/autonhome/__pycache__/
 backend/autonhome/db.sqlite3
 backend/autonhome/serre/__pycache__/
+backend/autonhome/serre/migrations/
