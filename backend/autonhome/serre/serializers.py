@@ -1,7 +1,13 @@
 from rest_framework import serializers
-from .models import Sensor, Measure, CalendarEvent
+from .models import Sensor, Measure, CalendarEvent, SensorType
+
+class SensorTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorType
+        fields = '__all__'
 
 class SensorSerializer(serializers.ModelSerializer):
+    types = SensorTypeSerializer(many=True, read_only=True)
     class Meta:
         model = Sensor
         fields = '__all__'

@@ -43,7 +43,7 @@ void sendDataToFirebase(float temperature, float humidity){
   jsonDoc.set("humidity", humidity);
   jsonDoc.set("timestamp", time(nullptr));  // Add current timestamp
 
-  String path = "/air_monitoring";
+  String path = "/air_monitoring/DHT22";
   if (Firebase.pushJSON(firebaseData, path, jsonDoc)) {
     Serial.println("Data sent to Firebase");
   } else {

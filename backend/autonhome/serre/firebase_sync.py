@@ -4,7 +4,7 @@ import pyrebase
 from dotenv import load_dotenv
 from pytz import timezone
 from datetime import datetime
-from constants import europe_paris_timezone, temperature_sensor_id, humidity_sensor_id
+from constants import europe_paris_timezone, dht22_sensor_id
 
 # Charge les variables d'environnement
 load_dotenv()
@@ -40,7 +40,7 @@ class FirebaseSync:
         response = requests.post("http://localhost:8000/api/token/", data={"username": self.DJANGO_USERNAME, "password": self.DJANGO_PASSWORD})
         return response.json()["access"]
 
-    def fetch_data_from_firebase(self,node="air_monitoring"):
+    def fetch_data_from_firebase(self,node="air_monitoring/DHT22"):
         """
         Fetch data from Firebase from specified node with authentication
         """
@@ -67,14 +67,18 @@ class FirebaseSync:
         
         return [
                     {
-                        "sensor": temperature_sensor_id, 
+                        "sensor": dht22_sensor_id, 
                         "value": firebase_measure.val()["temperature"],
-                        "timestamp": timestamp.isoformat()
+                        "timestamp": timestamp.isoformat(),
+                        "label": "Température",
+                        "unit": "°C"
                     },
                     {
-                        "sensor": humidity_sensor_id,
+                        "sensor": dht22_sensor_id,
                         "value": firebase_measure.val()["humidity"],
-                        "timestamp": timestamp.isoformat()
+                        "timestamp": timestamp.isoformat(),
+                        "label": "Humidité",
+                        "unit": "%"
                     }
                 ]
     
@@ -91,7 +95,7 @@ class FirebaseSync:
         in the
         """
         try:
-            node="air_monitoring"
+            node="air_monitoring/DHT22"
             firebase_data = self.fetch_data_from_firebase(node)
 
             for measure in firebase_data['measures'].each():                
