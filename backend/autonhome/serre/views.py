@@ -1,11 +1,9 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .models import Sensor, Measure, CalendarEvent
-from .serializers import SensorSerializer, MeasureSerializer, CalendarEventSerializer
-from django.contrib.auth import login, logout, authenticate
-from django.http import JsonResponse
-from django.views import View
+from .serializers import SensorSerializer, MeasureSerializer, CalendarEventSerializer, UserSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from rest_framework import permissions
 
 class SensorList(generics.ListCreateAPIView):
     queryset = Sensor.objects.all()
@@ -35,4 +33,14 @@ class CalendarEventList(generics.ListCreateAPIView):
 class CalendarEventDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CalendarEvent.objects.all()
     serializer_class = CalendarEventSerializer
+    permission_classes = [IsAuthenticated]
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]  # Anybody can create a user
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]

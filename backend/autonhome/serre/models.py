@@ -33,12 +33,15 @@ class Measure(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     value = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)
-    section = models.CharField(max_length=15, choices=Sensor.SECTION_CHOICES, blank=True)
+    section = models.CharField(max_length=15, choices=Sensor.SECTION_CHOICES, null=True)
     label = models.CharField(max_length=100, null=True)
     unit = models.CharField(max_length=20, null=True)
 
+    class Meta:
+        unique_together = (('sensor', 'value', 'timestamp', 'label', 'unit'),)
+
     def __str__(self):
-        return f"{self.sensor.name} - {self.sensor_type.type} - {self.value} - {self.timestamp}"
+        return f"{self.sensor.name} - {self.value} - {self.timestamp}"
 
     def save(self, *args, **kwargs):
         self.section = self.sensor.section

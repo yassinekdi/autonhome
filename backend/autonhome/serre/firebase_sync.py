@@ -1,7 +1,9 @@
 import os
 import requests
+import schedule 
 import pyrebase
 from dotenv import load_dotenv
+import time
 from pytz import timezone
 from datetime import datetime
 from constants import europe_paris_timezone, dht22_sensor_id
@@ -71,14 +73,14 @@ class FirebaseSync:
                         "value": firebase_measure.val()["temperature"],
                         "timestamp": timestamp.isoformat(),
                         "label": "Température",
-                        "unit": "°C"
+                        "unit": "°C",
                     },
                     {
                         "sensor": dht22_sensor_id,
                         "value": firebase_measure.val()["humidity"],
                         "timestamp": timestamp.isoformat(),
                         "label": "Humidité",
-                        "unit": "%"
+                        "unit": "%",
                     }
                 ]
     
@@ -88,6 +90,7 @@ class FirebaseSync:
         """
         response = requests.post(self.DJANGO_API, json=data, headers=headers)
         print(response.status_code, response.json())
+
         
     def sync_firebase_data(self):
         """
@@ -110,6 +113,13 @@ class FirebaseSync:
 
 
 if __name__ == "__main__":
-    # If this script is run directly, create a FirebaseSync instance and sync data.
     syncer = FirebaseSync()
-    syncer.sync_firebase_data()
+    # syncer.sync_firebase_data()
+
+    # Planifie l'exécution de la fonction toutes les 10 secondes
+    schedule.every(10).seconds.do(syncer.sync_firebase_data)
+
+    # Boucle infinie pour exécuter les tâches planifiées
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

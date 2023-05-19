@@ -27,4 +27,13 @@ export async function getMeasures(token) {
       console.error(`Error during fetching measures: ${error}`);
     }
   }
+
+export const postLogin = async (username, password) => {
+  const response = await axios.post('http://localhost:8000/api/login/', {
+    username,
+    password
+  });
+
+  return response.data;
+}
   

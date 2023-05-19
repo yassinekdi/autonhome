@@ -21,6 +21,10 @@ function App() {
       console.log("Measures: ", measures);
     };
     fetchData();
+
+    const intervalId = setInterval(fetchData, 10000); // Fetch data every 10 seconds
+
+    return () => clearInterval(intervalId); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, []);
 
   return (
