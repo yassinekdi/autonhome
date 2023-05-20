@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth.registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -142,6 +146,9 @@ REST_FRAMEWORK = {
     )
 }
 
+SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+REST_USE_JWT = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]

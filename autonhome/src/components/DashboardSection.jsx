@@ -11,7 +11,7 @@ const timeFilters = {
 function DashboardSection({ title, measures }) {
   const [open, setOpen] = useState(false);
   const [filteredMeasures, setFilteredMeasures] = useState(measures);
-  const [timeFilter, setTimeFilter] = useState(timeFilters['1H']);
+  const [timeFilter, setTimeFilter] = useState(timeFilters['1h']);
 
   // Filter measures by time
   useEffect(() => {

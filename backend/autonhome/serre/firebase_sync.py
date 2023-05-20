@@ -21,6 +21,7 @@ class FirebaseSync:
         self.FIREBASE_AUTH = os.getenv("FIREBASE_AUTH")
         self.DJANGO_API = os.getenv("DJANGO_API")
         self.DJANGO_USERNAME = os.getenv("DJANGO_USERNAME")
+        self.DJANGO_USER_ID = os.getenv("DJANGO_USER_ID")
         self.DJANGO_PASSWORD = os.getenv("DJANGO_PASSWORD")
         self.timezone=timezone(timezone_area)
 
@@ -69,11 +70,12 @@ class FirebaseSync:
         
         return [
                     {
-                        "sensor": dht22_sensor_id, 
+                        "sensor": dht22_sensor_id,
                         "value": firebase_measure.val()["temperature"],
                         "timestamp": timestamp.isoformat(),
                         "label": "Température",
                         "unit": "°C",
+                        "user": self.DJANGO_USER_ID,  # add this line
                     },
                     {
                         "sensor": dht22_sensor_id,
@@ -81,6 +83,7 @@ class FirebaseSync:
                         "timestamp": timestamp.isoformat(),
                         "label": "Humidité",
                         "unit": "%",
+                        "user": self.DJANGO_USER_ID,  # and this one
                     }
                 ]
     

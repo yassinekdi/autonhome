@@ -10,6 +10,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   marginBottom: theme.spacing(2),
+  // backgroundColor: '#CBEAED', // insérer votre couleur ici
 }));
 
 function Navbar() {

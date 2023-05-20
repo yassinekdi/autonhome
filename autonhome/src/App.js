@@ -5,8 +5,24 @@ import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
 import Navbar from './components/Navbar';
 import { getAccessToken, getMeasures } from './api';
+import { blueGrey, lightGreen } from '@mui/material/colors';
+import { AppBar, CssBaseline } from '@mui/material';
+import { styled } from '@mui/system';
 
-const theme = createTheme();
+
+const theme = createTheme({
+  palette: {
+    // primary: {
+    //   main: blueGrey[900], // changer à votre couleur préférée
+    // },
+    // secondary: {
+    //   main: lightGreen[500], // changer à votre couleur préférée
+    // },
+    // background: {
+    //   default: 'white' // changer à votre couleur préférée
+    // },
+  },
+});
 
 function App() {
   const [measures, setMeasures] = useState([]);
@@ -29,6 +45,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+       <CssBaseline />
       <Router>
         <Navbar />
         <Routes>

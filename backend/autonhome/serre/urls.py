@@ -13,7 +13,8 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # User authentification
-    path('api/auth/', include('dj_rest_auth.urls')),
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')), 
     path('users/', views.UserList.as_view(), name='user_list'),
     path('users/<int:pk>/', views.UserDetail.as_view(), name='user_detail'),
 ]

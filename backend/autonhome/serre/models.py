@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 
 class SensorType(models.Model):
     TYPE_CHOICES = (
@@ -25,6 +25,7 @@ class Sensor(models.Model):
     description = models.TextField(blank=True, null=True)
     types = models.ManyToManyField(SensorType)
     section = models.CharField(max_length=15, choices=SECTION_CHOICES)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -36,6 +37,7 @@ class Measure(models.Model):
     section = models.CharField(max_length=15, choices=Sensor.SECTION_CHOICES, null=True)
     label = models.CharField(max_length=100, null=True)
     unit = models.CharField(max_length=20, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         unique_together = (('sensor', 'value', 'timestamp', 'label', 'unit'),)
@@ -61,6 +63,7 @@ class CalendarEvent(models.Model):
     date = models.DateField()
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f"{self.title} - {self.date}"

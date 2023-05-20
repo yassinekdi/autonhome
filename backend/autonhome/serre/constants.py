@@ -1,2 +1,2 @@
 europe_paris_timezone='Europe/Paris'
-dht22_sensor_id = 1
+dht22_sensor_id = 2
