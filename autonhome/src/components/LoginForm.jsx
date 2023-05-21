@@ -1,20 +1,43 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../AuthContext';
 import { Button, TextField, Box } from '@mui/material';
-import { postLogin } from '../api';
+import { postLogin, getAccessToken, getMeasures } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { user, setUser, setToken, setMeasures } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await postLogin(username, password);
+    try {
+      const token = await getAccessToken(username, password);
+    
+      if (token) {
+        const data = await postLogin(token, username, password);
+        if (data.key) {
+          setUser({ token: data.key, username: username, password: password });
+          setToken(data.key);
 
-    console.log(response.data);
-  }
+          // Fetch measures after successful login
+          const measures = await getMeasures(data.key);
+          setMeasures(measures);
+          navigate('/'); // Navigates to the home page or any other page
+        }
+      }
+    } catch (error) {
+      console.error(`Login error: ${error}`);
+    }
+  };
+  
+  useEffect(() => {
 
+  }, [user]);
+  
   return (
     <Box
       component="form"

@@ -3,6 +3,10 @@ import DashboardSection from './DashboardSection';
 import { Container, Box } from '@mui/material';
 
 const Dashboard = ({ measures }) => {
+  if (!measures) {
+    return null; // ou retourner un loader, un message, etc.
+  }
+
   const airMeasures = measures.filter(measure => measure.section === 'Air');
   const soilMeasures = measures.filter(measure => measure.section === 'Soil');
   const waterMeasures = measures.filter(measure => measure.section === 'Water');

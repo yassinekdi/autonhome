@@ -15,25 +15,49 @@ export async function getAccessToken(username, password) {
   }
 }
 
+// export async function getMeasures(token) {
+//   try {
+//     const response = await axios.get(`${BASE_URL}measures/`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error(`Error during fetching measures: ${error}`);
+//   }
+// }
+
 export async function getMeasures(token) {
-    try {
-      const response = await axios.get(`${BASE_URL}measures/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error during fetching measures: ${error}`);
-    }
+  try {
+    const response = await axios.get(`${BASE_URL}measures/`, {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error(`Error during fetching measures: ${error}`);
   }
-
-export const postLogin = async (username, password) => {
-  const response = await axios.post('http://localhost:8000/api/login/', {
-    username,
-    password
-  });
-
-  return response.data;
 }
+
+
+
+export async function postLogin(token, username, password) {
+  try {
+    const response = await axios.post(`${BASE_URL}auth/login/`, {
+      username,
+      password
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error during login: ${error}`);
+  }
+}
+
   
