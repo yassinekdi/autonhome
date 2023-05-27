@@ -16,7 +16,7 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
 
 function Navbar() {
   const fsize = "16px";
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
 
   return (
     <StyledAppBar position="static">
@@ -24,37 +24,41 @@ function Navbar() {
         <Typography variant="h6" component={Link} sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }} to="/">
           AutonHome
         </Typography>
-        <Button
-          color="inherit"
-          component={Link}
-          to="/calendrier"
-          startIcon={<EventNoteIcon />}
-          sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
-        >
-          Calendrier
-        </Button>
-        <Button
-          color="inherit"
-          startIcon={<NotificationsIcon />}
-          sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
-        >
-          Notifications
-        </Button>
-        <Button
-          color="inherit"
-          startIcon={<SettingsIcon />}
-          sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
-        >
-          Paramètres
-        </Button>
-        <Button
-          color="inherit"
-          startIcon={<ExitToAppIcon />}
-          onClick={logout}
-          sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
-        >
-          Déconnexion
-        </Button>
+        {user && (
+          <>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/calendrier"
+              startIcon={<EventNoteIcon />}
+              sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
+            >
+              Calendrier
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<NotificationsIcon />}
+              sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
+            >
+              Notifications
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<SettingsIcon />}
+              sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
+            >
+              Paramètres
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<ExitToAppIcon />}
+              onClick={logout}
+              sx={{ textTransform: 'capitalize', fontSize: fsize, fontWeight: 'bold' }}
+            >
+              Déconnexion
+            </Button>
+          </>
+        )}
       </Toolbar>
     </StyledAppBar>
   );

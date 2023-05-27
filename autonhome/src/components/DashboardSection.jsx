@@ -6,6 +6,7 @@ const timeFilters = {
   '1h': 3600,
   '5h': 5 * 3600,
   '1j': 24 * 3600,
+  'Tout': Infinity,
 };
 
 function DashboardSection({ title, measures }) {
@@ -16,8 +17,11 @@ function DashboardSection({ title, measures }) {
   // Filter measures by time
   useEffect(() => {
     const now = new Date();
-    const timeAgo = new Date(now.getTime() - timeFilter * 1000);
-    const filtered = measures.filter(measure => new Date(measure.timestamp) >= timeAgo);
+    let filtered = measures;
+    if (timeFilter !== Infinity) {
+      const timeAgo = new Date(now.getTime() - timeFilter * 1000);
+      filtered = measures.filter(measure => new Date(measure.timestamp) >= timeAgo);
+    }
     setFilteredMeasures(filtered);
   }, [measures, timeFilter]);
 
@@ -47,42 +51,54 @@ function DashboardSection({ title, measures }) {
   }
 
   return (
-    <Card variant="outlined" sx={{ margin: 2, boxShadow: 3 }}>
+    <Card variant="outlined" sx={{ margin: 2, boxShadow: 3 }} >
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
-            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }} onClick={handleClick}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }} onClick={handleClick}>
+            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
               {title}
             </Typography>
           </Box>
           {open && (
-            <Select value={timeFilter} onChange={(event) => setTimeFilter(event.target.value)} sx={{ minWidth: 50, fontSize: '1rem', padding: '0' }}>
-              {Object.entries(timeFilters).map(([label, seconds]) => (
-                <MenuItem key={label} value={seconds} sx={{ fontSize: '0.8rem' }}>{label}</MenuItem>
-              ))}
-            </Select>
-          
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <Select value={timeFilter} onChange={(event) => setTimeFilter(event.target.value)} sx={{ minWidth: 50, fontSize: '1rem', padding: '0' }}>
+                {Object.entries(timeFilters).map(([label, seconds]) => (
+                  <MenuItem key={label} value={seconds} sx={{ fontSize: '0.8rem' }}>{label}</MenuItem>
+                ))}
+              </Select>
+            </Box>
           )}
-        </Box>
+        </Box>  
 
         {open && (
-          <Grid container spacing={2}>
-            {Object.entries(measuresByLabel).map(([label, labelMeasures]) => (
-              <Grid item xs={4} key={label}>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={labelMeasures} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                    <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
-                    <YAxis domain={['auto', 'auto']} />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#0066cc" name={`${label} (${labelMeasures[0].unit})`}/>
-                  </LineChart>
-                </ResponsiveContainer>
-              </Grid>
-            ))}
-          </Grid>
-        )}
+  <Grid container spacing={2}>
+    {Object.entries(measuresByLabel).map(([label, labelMeasures]) => (
+      <Grid item xs={4} key={label}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+          <Typography variant="subtitle1" sx={{ color: '#0066cc', marginRight: '0.5rem' }}>
+            -o-
+          </Typography>
+          <Typography variant="subtitle1" component="div" sx={{ color: '#0066cc' }}>
+            {`${label} (${labelMeasures[0].unit})`}
+          </Typography>
+        </Box>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={labelMeasures} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+            <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
+            <YAxis domain={['auto', 'auto']} />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip content={<CustomTooltip />} />
+            <Line type="monotone" dataKey="value" stroke="#0066cc"/>
+          </LineChart>
+        </ResponsiveContainer>
+      </Grid>
+    ))}
+  </Grid>
+)}
+
+
+
+
       </CardContent>
     </Card>
   );

@@ -13,7 +13,7 @@ function LoginForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     try {
       const token = await getAccessToken(username, password);
     
@@ -22,7 +22,8 @@ function LoginForm() {
         if (data.key) {
           setUser({ token: data.key, username: username, password: password });
           setToken(data.key);
-
+          localStorage.setItem('userToken', data.key);
+  
           // Fetch measures after successful login
           const measures = await getMeasures(data.key);
           setMeasures(measures);
@@ -33,6 +34,7 @@ function LoginForm() {
       console.error(`Login error: ${error}`);
     }
   };
+  
   
   useEffect(() => {
 

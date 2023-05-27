@@ -5,13 +5,15 @@ import { getMeasures } from './api';
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const storedToken = localStorage.getItem('userToken');
+  const [user, setUser] = useState(storedToken ? {token: storedToken} : null);
+  const [token, setToken] = useState(storedToken || null);
   const [measures, setMeasures] = useState([]);
   const navigate = useNavigate();
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('userToken');
     setToken(null);
     setMeasures([]);
     navigate('/login');
@@ -19,7 +21,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const fetchData = async () => {
-        console.log('TOKEN : ', token)
       if (token) {
         const measures = await getMeasures(token);
         setMeasures(measures);

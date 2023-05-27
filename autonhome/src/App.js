@@ -8,19 +8,7 @@ import { styled } from '@mui/system';
 import { AuthProvider } from './AuthContext';
 import RoutesComponent from './components/RoutesComponent';
 
-const theme = createTheme({
-  palette: {
-    // primary: {
-    //   main: blueGrey[900], // changer à votre couleur préférée
-    // },
-    // secondary: {
-    //   main: lightGreen[500], // changer à votre couleur préférée
-    // },
-    // background: {
-    //   default: 'white' // changer à votre couleur préférée
-    // },
-  },
-});
+const theme = createTheme({});
 
 function App() {
   return (
