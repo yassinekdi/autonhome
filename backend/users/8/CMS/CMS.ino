@@ -1,6 +1,14 @@
 #define AOUT_PIN 33
 unsigned long startTime;
 
+
+const char* WIFI_SSID = "Bbox-32BE8614";
+const char* WIFI_PASSWORD = "PcPQPfmPXTqVShDF6F";
+
+String FIREBASE_HOST = "https://autonhome-af7ba-default-rtdb.europe-west1.firebasedatabase.app/";
+String FIREBASE_AUTH = "idCrjvKYAhGFV56Yfnx8FbGtEzBDOzDGuvA40v7L";
+String UserId = "8";
+
 void setup() {
   Serial.begin(115200);
   startTime = millis();

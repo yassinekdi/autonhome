@@ -2,12 +2,12 @@
 #include <Wire.h>
 
 
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
+const char* WIFI_SSID = "Bbox-32BE8614";
+const char* WIFI_PASSWORD = "PcPQPfmPXTqVShDF6F";
 
-String FIREBASE_HOST = "";
-String FIREBASE_AUTH = "";
-String UserId = "";
+String FIREBASE_HOST = "https://autonhome-af7ba-default-rtdb.europe-west1.firebasedatabase.app/";
+String FIREBASE_AUTH = "idCrjvKYAhGFV56Yfnx8FbGtEzBDOzDGuvA40v7L";
+String UserId = "8";
 
 BH1750 lightMeter(0x23);
 

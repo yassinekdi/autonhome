@@ -71,30 +71,31 @@ function DashboardSection({ title, measures }) {
         </Box>  
 
         {open && (
-  <Grid container spacing={2}>
-    {Object.entries(measuresByLabel).map(([label, labelMeasures]) => (
-      <Grid item xs={4} key={label}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-          <Typography variant="subtitle1" sx={{ color: '#0066cc', marginRight: '0.5rem' }}>
-            -o-
-          </Typography>
-          <Typography variant="subtitle1" component="div" sx={{ color: '#0066cc' }}>
-            {`${label} (${labelMeasures[0].unit})`}
-          </Typography>
-        </Box>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={labelMeasures} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-            <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
-            <YAxis domain={['auto', 'auto']} />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="value" stroke="#0066cc"/>
-          </LineChart>
-        </ResponsiveContainer>
-      </Grid>
-    ))}
-  </Grid>
-)}
+            <Grid container spacing={2}>
+              {Object.entries(measuresByLabel).map(([label, labelMeasures]) => (
+                <Grid item xs={4} key={label}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                    <Typography variant="subtitle1" sx={{ color: '#0066cc', marginRight: '0.5rem' }}>
+                      -o-
+                    </Typography>
+                    <Typography variant="subtitle1" component="div" sx={{ color: '#0066cc' }}>
+                      {`${label} (${labelMeasures[0].unit})`}
+                    </Typography>
+                  </Box>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={labelMeasures} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                      <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
+                      <YAxis domain={['auto', 'auto']} />
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Line type="monotone" dataKey="value" stroke="#0066cc" dot={{ stroke: '#0066cc', strokeWidth: 1 }}/>
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+
 
 
 

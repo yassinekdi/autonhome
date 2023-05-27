@@ -6,7 +6,14 @@ from dotenv import load_dotenv
 import time
 from pytz import timezone
 from datetime import datetime
-from constants import europe_paris_timezone, dht22_sensor_id
+import sys
+from pathlib import Path
+
+autonhome_dir = str(Path(__file__).parents[1])
+serre_path = os.path.join(autonhome_dir,'serre')
+sys.path.append(serre_path)
+
+from serre.constants import europe_paris_timezone, dht22_sensor_id
 
 # Charge les variables d'environnement
 load_dotenv()

@@ -1,6 +1,10 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from pathlib import Path
+from syncs.user_sync import UserSync
+import os
+import json
 
 class SensorType(models.Model):
     TYPE_CHOICES = (
@@ -17,8 +21,8 @@ class SensorType(models.Model):
 class Sensor(models.Model):
     SECTION_CHOICES = (
         ('Air', 'Air'),
-        ('Soil', 'Soil'),
-        ('Water', 'Water'),
+        ('Bac 1', 'Bac 1'),
+        ('Eau', 'Eau'),
     )
 
     name = models.CharField(max_length=100)
@@ -67,3 +71,28 @@ class CalendarEvent(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.date}"
+
+
+def user_post_save(sender, instance, created, **kwargs):
+    main_dir = Path(__file__).parents[3]
+    user_dir = os.path.join(main_dir, 'backend','users')
+    if created:
+        # create the user directory
+        user_dir = os.path.join(user_dir, str(instance.id))
+        os.makedirs(user_dir, exist_ok=True)
+        
+        # export the user's data to JSON
+        data = {
+            'id': instance.id,
+        }
+        with open(os.path.join(user_dir, f'{instance.id}.json'), 'w') as f:
+            json.dump(data, f)
+        
+        #TODO: run the user_sync script
+        user_sync = UserSync(user_dir, os.path.join(main_dir, 'capteurs'))
+        user_sync.sync()
+
+        
+
+# connect the function to the User model's post_save signal
+models.signals.post_save.connect(user_post_save, sender=User)

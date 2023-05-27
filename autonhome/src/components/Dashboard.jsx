@@ -7,16 +7,19 @@ const Dashboard = ({ measures }) => {
     return null; // ou retourner un loader, un message, etc.
   }
 
-  const airMeasures = measures.filter(measure => measure.section === 'Air');
-  const soilMeasures = measures.filter(measure => measure.section === 'Soil');
-  const waterMeasures = measures.filter(measure => measure.section === 'Water');
+  const measuresBySection = measures.reduce((groups, measure) => {
+    const group = (groups[measure.section] || []);
+    group.push(measure);
+    groups[measure.section] = group;
+    return groups;
+  }, {});
 
   return (
     <Box>
       <Container>
-        <DashboardSection title="Air" measures={airMeasures}/>
-        <DashboardSection title="Sol" measures={soilMeasures}/>
-        <DashboardSection title="Eau" measures={waterMeasures}/>
+        {Object.entries(measuresBySection).map(([section, sectionMeasures]) => (
+          <DashboardSection key={section} title={section} measures={sectionMeasures}/>
+        ))}
       </Container>
     </Box>
   );

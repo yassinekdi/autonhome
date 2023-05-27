@@ -4,15 +4,13 @@
 #include <FirebaseESP32.h>
 #include <time.h>
 
-// INO VARIABLES -------------------
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
-String FIREBASE_HOST = "";
-String FIREBASE_AUTH = "";
-String UserId = "";
-String SECTION = "Air"; // ou Eau ou BAC i
-String SENSOR = "DHT22";
-// INO VARIABLES -------------------
+const char* WIFI_SSID = "Bbox-32BE8614";
+const char* WIFI_PASSWORD = "PcPQPfmPXTqVShDF6F";
+
+String FIREBASE_HOST = "https://autonhome-af7ba-default-rtdb.europe-west1.firebasedatabase.app/";
+String FIREBASE_AUTH = "idCrjvKYAhGFV56Yfnx8FbGtEzBDOzDGuvA40v7L";
+String UserId = "8";
+String
 
 FirebaseData firebaseData;
 DHT dht(33, DHT22);
@@ -47,7 +45,7 @@ void sendDataToFirebase(float temperature, float humidity){
   jsonDoc.set("humidity", humidity);
   jsonDoc.set("timestamp", time(nullptr));  // Add current timestamp
 
-  String path = "/" + USERID + "/" + SECTION + "/" + SENSOR;
+  String path = "/air_monitoring";
   if (Firebase.pushJSON(firebaseData, path, jsonDoc)) {
     Serial.println("Data sent to Firebase");
   } else {
