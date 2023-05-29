@@ -34,13 +34,15 @@ class RealtimeFirebaseSync:
         self.DJANGO_USERNAME = os.getenv("DJANGO_USERNAME")
         self.DJANGO_USER_ID = os.getenv("DJANGO_USER_ID")
         self.DJANGO_PASSWORD = os.getenv("DJANGO_PASSWORD")
+        self.FIREBASE_AUTH_DOMAIN = os.getenv("FIREBASE_AUTH_DOMAIN")
+        self.FIREBASE_STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET")
         self.timezone=timezone(timezone_area)
 
         self.config = {
             "apiKey": self.FIREBASE_AUTH,
-            "authDomain": "autonhome-af7ba.firebaseapp.com",
+            "authDomain": self.FIREBASE_AUTH_DOMAIN,
             "databaseURL": self.FIREBASE_HOST,
-            "storageBucket": "autonhome-af7ba.appspot.com",
+            "storageBucket": self.FIREBASE_STORAGE_BUCKET,
         }
 
 
@@ -152,12 +154,14 @@ class FirebaseStorageSync:
         self.FIREBASE_HOST = os.getenv("FIREBASE_HOST")
         self.FIREBASE_AUTH = os.getenv("FIREBASE_AUTH")
         self.DJANGO_USER_ID = os.getenv("DJANGO_USER_ID")
+        self.FIREBASE_AUTH_DOMAIN = os.getenv("FIREBASE_AUTH_DOMAIN")
+        self.FIREBASE_STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET")
 
         self.config = {
             "apiKey": self.FIREBASE_AUTH,
-            "authDomain": "autonhome-af7ba.firebaseapp.com",
+            "authDomain": self.FIREBASE_AUTH_DOMAIN,
             "databaseURL": self.FIREBASE_HOST,
-            "storageBucket": "autonhome-af7ba.appspot.com",
+            "storageBucket": self.FIREBASE_STORAGE_BUCKET,
         }
 
         self.firebase = pyrebase.initialize_app(self.config)
