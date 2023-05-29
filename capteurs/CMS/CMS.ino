@@ -18,16 +18,16 @@ void setup() {
 
 void loop() {
   int value= analogRead(AOUT_PIN);
-  float humidity = ((value - 3413.4) / (1584.7 - 3413.4)) * 100;
+  float humidity = ((value - 3490) / (1584.7 - 3490)) * 100;
   humidity = constrain(humidity, 0, 100);
   unsigned long currentTime = (millis() - startTime) / 1000;
   Serial.print("Temps (sec) : ");
   Serial.print(currentTime);
-  Serial.print(", Humidité: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-  // Serial.print(", Valeur: ");
-  // Serial.println(value);
+  // Serial.print(", Humidité: ");
+  // Serial.print(humidity);
+  // Serial.print(" %");
+  Serial.print(", Valeur: ");
+  Serial.println(value);
 
   delay(1000);
 }

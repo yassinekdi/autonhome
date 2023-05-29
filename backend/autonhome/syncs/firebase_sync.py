@@ -9,16 +9,20 @@ from datetime import datetime
 import sys
 from pathlib import Path
 
-autonhome_dir = str(Path(__file__).parents[1])
-serre_path = os.path.join(autonhome_dir,'serre')
+import requests
+from PIL import Image
+from io import BytesIO
+
+autonhome_dir = Path(__file__).resolve().parents[1]
+serre_path = os.path.join(autonhome_dir)
 sys.path.append(serre_path)
 
-from serre.constants import europe_paris_timezone, dht22_sensor_id
+from serre.constants import europe_paris_timezone, measures_metadata
 
 # Charge les variables d'environnement
 load_dotenv()
 
-class FirebaseSync:
+class RealtimeFirebaseSync:
 
     def __init__(self,timezone_area=europe_paris_timezone):
         """
@@ -50,7 +54,7 @@ class FirebaseSync:
         response = requests.post("http://localhost:8000/api/token/", data={"username": self.DJANGO_USERNAME, "password": self.DJANGO_PASSWORD})
         return response.json()["access"]
 
-    def fetch_data_from_firebase(self,node="air_monitoring/DHT22"):
+    def fetch_data_from_firebase(self,node):
         """
         Fetch data from Firebase from specified node with authentication
         """
@@ -67,33 +71,6 @@ class FirebaseSync:
         local_time = utc_time.replace(tzinfo=timezone('UTC')).astimezone(self.timezone)
         return local_time
     
-    def process_firebase_data(self,firebase_measure):
-        """
-        Process a single measure from Firebase, converting it into the data format
-        required by the Django API.
-        """
-        timestamp_int = firebase_measure.val()['timestamp']  
-        timestamp = self.convert_timestamp(timestamp_int) 
-        
-        return [
-                    {
-                        "sensor": dht22_sensor_id,
-                        "value": firebase_measure.val()["temperature"],
-                        "timestamp": timestamp.isoformat(),
-                        "label": "Température",
-                        "unit": "°C",
-                        "user": self.DJANGO_USER_ID,  # add this line
-                    },
-                    {
-                        "sensor": dht22_sensor_id,
-                        "value": firebase_measure.val()["humidity"],
-                        "timestamp": timestamp.isoformat(),
-                        "label": "Humidité",
-                        "unit": "%",
-                        "user": self.DJANGO_USER_ID,  # and this one
-                    }
-                ]
-    
     def create_Measure(self,data,headers):
         """
         Send a POST request to the Django API to create a new Measure instance.
@@ -101,35 +78,127 @@ class FirebaseSync:
         response = requests.post(self.DJANGO_API, json=data, headers=headers)
         print(response.status_code, response.json())
 
-        
-    def sync_firebase_data(self):
+    def get_sensors(self):
+        """
+        Retrieve all sensor instances from Django API
+        """
+        headers = {"Authorization": f"Bearer {self.get_auth_token()}"}
+        response = requests.get(self.DJANGO_API+"/sensors/", headers=headers)
+        return response.json()
+
+    def get_sensor_id(self, sensor_name):
+        """
+        Retrieve the ID of a sensor with the given name
+        """
+        sensors = self.get_sensors()
+        for sensor in sensors:
+            if sensor["name"] == sensor_name:
+                return sensor["id"]
+        return None
+
+    def sync(self):
         """
         Fetch data from Firebase, process it and create new Measure instances
         in the
         """
         try:
-            node="air_monitoring/DHT22"
-            firebase_data = self.fetch_data_from_firebase(node)
+            sensors = self.get_sensors()
+            for sensor in sensors:
+                node=f"{self.DJANGO_USER_ID}/{sensor['section']}/{sensor['name']}"
+                firebase_data = self.fetch_data_from_firebase(node)
 
-            for measure in firebase_data['measures'].each():                
-                data = self.process_firebase_data(measure)                
-                for measure_data in data:              
-                    self.create_Measure(measure_data, firebase_data['headers']) # Send post request to API to create Measure instance.
-            
-                
+                for measure in firebase_data['measures'].each():                
+                    data = self.process_firebase_data(measure, sensor['id'])                
+                    for measure_data in data:              
+                        self.create_Measure(measure_data, firebase_data['headers']) # Send post request to API to create Measure instance.
+                                
         except Exception as e:
             print(' ')
             print(f"Une erreur s'est produite lors de la synchronisation des données: {e}")
 
+    def process_firebase_data(self,firebase_measure, sensor_id):
+        """
+        Process a single measure from Firebase, converting it into the data format
+        required by the Django API.
+        """
+        timestamp_int = firebase_measure.val()['timestamp']  
+        timestamp = self.convert_timestamp(timestamp_int) 
+
+        data = []
+        for measure_name, metadata in measures_metadata.items():
+            if measure_name in firebase_measure.val():
+                measure_data = {
+                    "sensor": sensor_id,
+                    "value": firebase_measure.val()[measure_name],
+                    "timestamp": timestamp.isoformat(),
+                    "label": metadata["label"],
+                    "unit": metadata["unit"],
+                    "user": self.DJANGO_USER_ID,
+                }
+                data.append(measure_data)
+
+        return data
+
+
+class FirebaseStorageSync:
+
+    def __init__(self):
+        """
+        Initialize ImageCapture with provided arguments
+        """
+        IP_adress = os.getenv("IP_ADRESS")
+        self.url = IP_adress + "capture"
+        
+        self.FIREBASE_HOST = os.getenv("FIREBASE_HOST")
+        self.FIREBASE_AUTH = os.getenv("FIREBASE_AUTH")
+        self.DJANGO_USER_ID = os.getenv("DJANGO_USER_ID")
+
+        self.config = {
+            "apiKey": self.FIREBASE_AUTH,
+            "authDomain": "autonhome-af7ba.firebaseapp.com",
+            "databaseURL": self.FIREBASE_HOST,
+            "storageBucket": "autonhome-af7ba.appspot.com",
+        }
+
+        self.firebase = pyrebase.initialize_app(self.config)
+        self.storage = self.firebase.storage()
+
+    def sync(self):
+        """
+        Capture image from provided url and save it to Firebase Storage
+        """
+        try:
+            response = requests.get(self.url)
+            image_data = BytesIO(response.content)
+
+            # Get current time and format it
+            now = datetime.now()
+            formatted_time = now.strftime("%H_%d_%m_%Y")
+
+            image_name = f'capt_{formatted_time}.jpg'
+            print(f"Image capturée à {time.ctime()}")
+            self.storage.child(f"{self.DJANGO_USER_ID}/{image_name}").put(image_data)
+
+        except Exception as e:
+            print(f"Une erreur est survenue: {e}")
+
 
 if __name__ == "__main__":
-    syncer = FirebaseSync()
-    # syncer.sync_firebase_data()
+    # REALTIME FIREBASE 
+    # syncer = RealtimeFirebaseSync()
+    # # Planifie l'exécution de la fonction toutes les 10 secondes
+    # schedule.every(10).seconds.do(syncer.sync)
 
-    # Planifie l'exécution de la fonction toutes les 10 secondes
-    schedule.every(10).seconds.do(syncer.sync_firebase_data)
+    # # Boucle infinie pour exécuter les tâches planifiées
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
-    # Boucle infinie pour exécuter les tâches planifiées
+    # STORAGE FIREBASE
+    syncer = FirebaseStorageSync()
+
+    schedule.every(10).seconds.do(syncer.sync)
+
     while True:
         schedule.run_pending()
         time.sleep(1)

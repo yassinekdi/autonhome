@@ -1,2 +1,7 @@
 europe_paris_timezone='Europe/Paris'
-dht22_sensor_id = 2
+measures_metadata = {
+    'temperature': {'label': 'Température',
+                    'unit': '°C'},
+    'humidity': {'label': 'Humidité',
+                    'unit': '%'}
+}
