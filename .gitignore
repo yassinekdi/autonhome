@@ -1,5 +1,9 @@
 .env
 backend/autonhome/autonhome/__pycache__/
+backend/autonhome/syncs/service-account.json
+backend/autonhome/syncs/__pycache__/
+backend/users/
+backend/.vscode/
 backend/autonhome/db.sqlite3
 backend/autonhome/serre/__pycache__/
 backend/autonhome/serre/migrations/

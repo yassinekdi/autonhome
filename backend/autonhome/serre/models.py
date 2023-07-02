@@ -3,32 +3,22 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from pathlib import Path
 from syncs.user_sync import UserSync
+from .constants import SECTIONS_CHOICE,SENSOR_TYPE_CHOICES
 import os
-import json
 
 class SensorType(models.Model):
-    TYPE_CHOICES = (
-        ('Temperature', 'Temperature'),
-        ('Humidity', 'Humidity'),
-        ('Luminosity', 'Luminosity'),
-        # Add other sensor types if necessary
-    )
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
+    
+    type = models.CharField(max_length=20, choices=SENSOR_TYPE_CHOICES, null=True)
 
     def __str__(self):
         return self.type
 
 class Sensor(models.Model):
-    SECTION_CHOICES = (
-        ('Air', 'Air'),
-        ('Bac 1', 'Bac 1'),
-        ('Eau', 'Eau'),
-    )
-
+    
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     types = models.ManyToManyField(SensorType)
-    section = models.CharField(max_length=15, choices=SECTION_CHOICES)
+    section = models.CharField(max_length=15, choices=SECTIONS_CHOICE)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -38,7 +28,7 @@ class Measure(models.Model):
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     value = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)
-    section = models.CharField(max_length=15, choices=Sensor.SECTION_CHOICES, null=True)
+    section = models.CharField(max_length=15, choices=SECTIONS_CHOICE, null=True)
     label = models.CharField(max_length=100, null=True)
     unit = models.CharField(max_length=20, null=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -80,14 +70,7 @@ def user_post_save(sender, instance, created, **kwargs):
         # create the user directory
         user_dir = os.path.join(user_dir, str(instance.id))
         os.makedirs(user_dir, exist_ok=True)
-        
-        # export the user's data to JSON
-        data = {
-            'id': instance.id,
-        }
-        with open(os.path.join(user_dir, f'{instance.id}.json'), 'w') as f:
-            json.dump(data, f)
-        
+
         #TODO: run the user_sync script
         user_sync = UserSync(user_dir, os.path.join(main_dir, 'capteurs'))
         user_sync.sync()

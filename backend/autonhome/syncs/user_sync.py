@@ -8,11 +8,7 @@ class UserSync:
         self.user_dir = user_dir
         self.sensors_dir = sensors_dir
         self.env = dotenv_values()
-        self.user_id = self._get_user_id()
-
-    def _get_user_id(self):
-        with open(os.path.join(self.user_dir, f'{os.path.basename(self.user_dir)}.json'), 'r') as f:
-            return json.load(f)['id']
+        self.user_id = int(user_dir.split('/')[-1])
 
     def sync(self):
         # copy sensor files
