@@ -19,8 +19,8 @@
 
 #include "camera_pins.h"
 
-const char* ssid = "Bbox-32BE8614";
-const char* password = "PcPQPfmPXTqVShDF6F";
+const char* ssid = "";
+const char* password = "";
 
 void startCameraServer();
 

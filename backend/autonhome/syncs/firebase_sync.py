@@ -9,8 +9,8 @@ from datetime import datetime
 import sys
 from pathlib import Path
 import firebase_admin
-from firebase_admin import credentials, db
-from PIL import Image
+from firebase_admin import credentials, db, storage
+# from PIL import Image
 from io import BytesIO
 
 autonhome_dir = Path(__file__).resolve().parents[1]
@@ -148,24 +148,20 @@ class FirebaseStorageSync:
         """
         Initialize ImageCapture with provided arguments
         """
-        IP_adress = os.getenv("IP_ADRESS")
-        self.url = IP_adress + "capture"
-        
-        self.FIREBASE_HOST = os.getenv("FIREBASE_HOST")
-        self.FIREBASE_AUTH = os.getenv("FIREBASE_AUTH")
+        IP_address = os.getenv("IP_ADRESS")
+        self.url = IP_address + "capture"
         self.DJANGO_USER_ID = os.getenv("DJANGO_USER_ID")
-        self.FIREBASE_AUTH_DOMAIN = os.getenv("FIREBASE_AUTH_DOMAIN")
-        self.FIREBASE_STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET")
+        self.SERVICE_ACCOUNT_KEY = os.getenv("SERVICE_ACCOUNT_KEY", )
+        firebase_scount_path = os.path.join(serre_path,'syncs','service-account.json')
 
-        self.config = {
-            "apiKey": self.FIREBASE_AUTH,
-            "authDomain": self.FIREBASE_AUTH_DOMAIN,
-            "databaseURL": self.FIREBASE_HOST,
-            "storageBucket": self.FIREBASE_STORAGE_BUCKET,
-        }
+        # Initialize Firebase
+        cred = credentials.Certificate(firebase_scount_path)
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': os.getenv("FIREBASE_STORAGE_BUCKET")
+        })
 
-        # self.firebase = pyrebase.initialize_app(self.config)
-        # self.storage = self.firebase.storage()
+        # Get the storage bucket
+        self.bucket = storage.bucket()
 
     def sync(self):
         """
@@ -181,28 +177,27 @@ class FirebaseStorageSync:
 
             image_name = f'capt_{formatted_time}.jpg'
             print(f"Image capturée à {time.ctime()}")
-            self.storage.child(f"{self.DJANGO_USER_ID}/{image_name}").put(image_data)
+
+            # Create a new blob and upload the image's content.
+            blob = self.bucket.blob(f"{self.DJANGO_USER_ID}/{image_name}")
+            blob.upload_from_file(image_data, content_type='image/jpg')
 
         except Exception as e:
             print(f"Une erreur est survenue: {e}")
 
 
+
 if __name__ == "__main__":
     # REALTIME FIREBASE 
-    syncer = RealtimeFirebaseSync()
+    realtime_syncer = RealtimeFirebaseSync()
+    # STORAGE FIREBASE
+    storage_syncer = FirebaseStorageSync()
+
     # Planifie l'exécution de la fonction toutes les 10 secondes
-    schedule.every(10).seconds.do(syncer.sync)
+    schedule.every(10).seconds.do(realtime_syncer.sync)
+    schedule.every(10).seconds.do(storage_syncer.sync)
 
     # Boucle infinie pour exécuter les tâches planifiées
     while True:
         schedule.run_pending()
         time.sleep(1)
-
-    # # STORAGE FIREBASE
-    # syncer = FirebaseStorageSync()
-
-    # schedule.every(10).seconds.do(syncer.sync)
-
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)

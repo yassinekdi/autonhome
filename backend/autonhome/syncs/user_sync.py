@@ -1,5 +1,4 @@
 import os
-import json
 from dotenv import dotenv_values
 from pathlib import Path
 
@@ -17,8 +16,8 @@ class UserSync:
             if os.path.isdir(sensor_path):
                 os.makedirs(os.path.join(self.user_dir, sensor), exist_ok=True)
                 for file in os.listdir(sensor_path):
-                    if file.endswith('.ino'):
-                        self._copy_and_update_file(os.path.join(sensor_path, file))
+                    # if file.endswith('.ino'):
+                    self._copy_and_update_file(os.path.join(sensor_path, file))
 
     def _copy_and_update_file(self, file_path):
         with open(file_path, 'r') as f:
