@@ -59,7 +59,9 @@ class RealtimeFirebaseSync:
         Fetch data from Firebase from specified node
         """
         ref = db.reference(node)
-        return ref.get()
+        data = ref.order_by_key().limit_to_last(5).get()
+        # data = ref.get()
+        return data
 
     def convert_timestamp(self, timestamp_int):
         """
@@ -98,21 +100,21 @@ class RealtimeFirebaseSync:
         Fetch data from Firebase, process it and create new Measure instances
         in the
         """
-        try:
-            self.get_sensors()
-            for sensor in self.sensors:
-                node=f"{self.DJANGO_USER_ID}/{sensor['section']}/{sensor['name']}"
-                firebase_data = self.fetch_data_from_firebase(node)
+        # try:
+        self.get_sensors()
+        for sensor in self.sensors:
+            node=f"{self.DJANGO_USER_ID}/{sensor['section']}/{sensor['name']}"
+            firebase_data = self.fetch_data_from_firebase(node)
 
-                for measure_key in firebase_data:                
-                    measure = firebase_data[measure_key]
-                    data = self.process_firebase_data(measure, sensor['id'])              
-                    for measure_data in data:              
-                        self.create_Measure(measure_data, headers=self.api_header) # Send post request to API to create Measure instance.
+            for measure_key in firebase_data:                
+                measure = firebase_data[measure_key]
+                data = self.process_firebase_data(measure, sensor['id'])              
+                for measure_data in data:              
+                    self.create_Measure(measure_data, headers=self.api_header) # Send post request to API to create Measure instance.
 
-        except Exception as e:
-            print(' ')
-            print(f"Une erreur s'est produite lors de la synchronisation des données: {e}")
+        # except Exception as e:
+        #     print(' ')
+        #     print(f"Une erreur s'est produite lors de la synchronisation des données: {e}")
 
     def get_auth_header(self):
         return {"Authorization": f"Bearer {self.auth_token}"}
@@ -191,13 +193,13 @@ if __name__ == "__main__":
     # REALTIME FIREBASE 
     realtime_syncer = RealtimeFirebaseSync()
     # STORAGE FIREBASE
-    storage_syncer = FirebaseStorageSync()
+    # storage_syncer = FirebaseStorageSync()
 
     # Planifie l'exécution de la fonction toutes les 10 secondes
-    schedule.every(10).seconds.do(realtime_syncer.sync)
-    schedule.every(10).seconds.do(storage_syncer.sync)
+    schedule.every(3).seconds.do(realtime_syncer.sync)
+    # schedule.every(10).seconds.do(storage_syncer.sync)
 
     # Boucle infinie pour exécuter les tâches planifiées
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        # time.sleep(1)

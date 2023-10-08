@@ -53,18 +53,18 @@ void setup() {
 }
 
 void loop() {
-    float humidity_CMS4, humidity_CMS5;
-    loopCMS(humidity_CMS4, humidity_CMS5);
+    float humidity_CMS4, humidity_CMS1;
+    loopCMS(humidity_CMS4, humidity_CMS1);
 
     // unsigned long currentTime = (millis() - startTime) / 1000;
     // Serial.print("Temps (sec) : ");
     // Serial.print(currentTime);
     // Serial.print(", Valeur CMS 4 : ");
-    // Serial.println(value_CMS_4);
+    // Serial.println(humidity_CMS4);
     sendDataToFirebase(humidity_CMS4, "humidity", "POT1", "CMS4");
-    // Serial.print(", Valeur CMS 5 : ");
-    // Serial.println(value_CMS_5);
-    sendDataToFirebase(humidity_CMS5, "humidity", "POT2", "CMS5");
+    // Serial.print(", Valeur CMS 1 : "); 
+    // Serial.println(humidity_CMS1);
+    sendDataToFirebase(humidity_CMS1, "humidity", "POT2", "CMS5");
 
     float temp_dht, humidity_dht;
     loopDHT(temp_dht, humidity_dht);
@@ -80,5 +80,5 @@ void loop() {
     // Serial.println(" % ");
     sendDataToFirebase(humidity_dht, "humidity", "AIR", "DHT22");
 
-    delay(2000);
+    delay(900000);
 }

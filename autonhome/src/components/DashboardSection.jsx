@@ -8,6 +8,11 @@ const timeFilters = {
   '1j': 24 * 3600,
   'Tout': Infinity,
 };
+const measureDomains = {
+  'Température': [2, 40],
+  'Humidité': [0, 100]
+};
+
 
 function DashboardSection({ title, measures }) {
   const [open, setOpen] = useState(false);
@@ -85,7 +90,7 @@ function DashboardSection({ title, measures }) {
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={labelMeasures} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                       <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} />
-                      <YAxis domain={['auto', 'auto']} />
+                      <YAxis domain={measureDomains[label] || ['auto', 'auto']} />
                       <CartesianGrid strokeDasharray="3 3" />
                       <Tooltip content={<CustomTooltip />} />
                       <Line type="monotone" dataKey="value" stroke="#0066cc" dot={{ stroke: '#0066cc', strokeWidth: 1 }}/>

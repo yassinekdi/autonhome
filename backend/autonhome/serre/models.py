@@ -72,7 +72,7 @@ def user_post_save(sender, instance, created, **kwargs):
         os.makedirs(user_dir, exist_ok=True)
 
         #TODO: run the user_sync script
-        user_sync = UserSync(user_dir, os.path.join(main_dir, 'capteurs'))
+        user_sync = UserSync(user_dir, os.path.join(main_dir, 'SensorsToCopy'))
         user_sync.sync()
 
         
