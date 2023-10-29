@@ -5,6 +5,8 @@ measures_metadata = {
                     'unit': '%'},
     'tds': {'label': 'TDS',
                     'unit': 'ppm'},
+    'pH': {'label': 'pH',
+                    'unit': ''},
 }
 SECTIONS_CHOICE = (
         ('AIR', 'AIR'),
@@ -17,5 +19,6 @@ SENSOR_TYPE_CHOICES = (
         ('Humidity', 'Humidity'),
         ('Luminosity', 'Luminosity'),
         ('Dissolved Solids', 'Dissolved Solids'),
+        ('pH', 'pH'),
         # Add other sensor types if necessary
     )

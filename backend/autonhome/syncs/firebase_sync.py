@@ -100,21 +100,22 @@ class RealtimeFirebaseSync:
         Fetch data from Firebase, process it and create new Measure instances
         in the
         """
-        # try:
-        self.get_sensors()
-        for sensor in self.sensors:
-            node=f"{self.DJANGO_USER_ID}/{sensor['section']}/{sensor['name']}"
-            firebase_data = self.fetch_data_from_firebase(node)
+        try:
+            self.get_sensors()
+            for sensor in self.sensors:
+                node=f"{self.DJANGO_USER_ID}/{sensor['section']}/{sensor['name']}"
+                
+                firebase_data = self.fetch_data_from_firebase(node)
 
-            for measure_key in firebase_data:                
-                measure = firebase_data[measure_key]
-                data = self.process_firebase_data(measure, sensor['id'])              
-                for measure_data in data:              
-                    self.create_Measure(measure_data, headers=self.api_header) # Send post request to API to create Measure instance.
+                for measure_key in firebase_data:                
+                    measure = firebase_data[measure_key]
+                    data = self.process_firebase_data(measure, sensor['id']) 
+                    for measure_data in data:              
+                        self.create_Measure(measure_data, headers=self.api_header) # Send post request to API to create Measure instance.
 
-        # except Exception as e:
-        #     print(' ')
-        #     print(f"Une erreur s'est produite lors de la synchronisation des données: {e}")
+        except Exception as e:
+            print(' ')
+            print(f"Une erreur s'est produite lors de la synchronisation des données: {e}")
 
     def get_auth_header(self):
         return {"Authorization": f"Bearer {self.auth_token}"}
@@ -126,7 +127,6 @@ class RealtimeFirebaseSync:
         """
         timestamp_int = firebase_measure['timestamp']  
         timestamp = self.convert_timestamp(timestamp_int)
-
         data = []
         for measure_name, metadata in measures_metadata.items():
             if measure_name in firebase_measure:

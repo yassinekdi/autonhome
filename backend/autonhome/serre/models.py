@@ -30,7 +30,7 @@ class Measure(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     section = models.CharField(max_length=15, choices=SECTIONS_CHOICE, null=True)
     label = models.CharField(max_length=100, null=True)
-    unit = models.CharField(max_length=20, null=True)
+    unit = models.CharField(max_length=20, null=True, blank=True)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     class Meta:

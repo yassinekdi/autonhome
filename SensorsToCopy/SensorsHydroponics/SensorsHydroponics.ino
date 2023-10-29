@@ -56,5 +56,18 @@ void loop() {
   loopTDS(tdsValue);
   sendDataToFirebase(tdsValue, "tds", "EAU", "TDS");
 
-  delay(900000); // Wait for 15 minutes before taking another set of measurements
+  // For PH
+  if(Serial.available() > 0) { // Vérifie si des données sont disponibles pour être lues depuis le port série
+    String pH_data = Serial.readStringUntil('\n'); // Lit la ligne jusqu'à ce qu'un saut de ligne soit reçu
+
+    // Ici, je pars le String pour obtenir uniquement la valeur numérique. Cela suppose que l'Arduino envoie "PH_Voltage=xxx"
+    if (pH_data.startsWith("PH_Voltage=")) {
+      float pH_voltage = pH_data.substring(11).toFloat();
+      Serial.print("PH voltage ESP part : ");
+      Serial.println(pH_voltage, 4);
+      sendDataToFirebase(pH_voltage, "pH", "EAU", "pH");
+    }
+  }
+  // delay(900000); // Wait for 15 minutes before taking another set of measurements
+  delay(3000);
 }
