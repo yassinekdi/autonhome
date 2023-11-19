@@ -10,14 +10,14 @@ void setup() {
 }
 
 void loop() {
-  int tdsRawValue = analogRead(TDS_PIN);  // Read the raw value from the TDS sensor
-  float tdsValue = (tdsRawValue / 4095.0) * 3.3; // Convert the raw value to voltage
-  
+  float calibration_factor = 0.895;
+  int tdsRawValue = analogRead(TDS_PIN)*calibration_factor;  // Read the raw value from the TDS sensor
+  // float tdsValue = (tdsRawValue / 4095.0) * 3.3; // Convert the raw value to voltage
+  // tdsValue *= calibration_factor; 
+
   // Print the values to Serial Monitor
   Serial.print("TDS Raw Value: ");
-  Serial.print(tdsRawValue);
-  Serial.print("\tTDS Value in Voltage: ");
-  Serial.println(tdsValue, 4); // Print with 4 decimal places
+  Serial.println(tdsRawValue);
   
   delay(2000); // Wait for 2 seconds before reading again
 }

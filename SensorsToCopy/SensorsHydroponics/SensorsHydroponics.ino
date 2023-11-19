@@ -31,6 +31,7 @@ void setup() {
   Serial.begin(115200);
   setupDHT();
   setupTDS();
+  setupBH();
   
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
@@ -45,18 +46,24 @@ void setup() {
 }
 
 void loop() {
-  // For DHT
+  // For DHT ----------------------------
   float temp_dht, humidity_dht;
   loopDHT(temp_dht, humidity_dht);
   sendDataToFirebase(temp_dht, "temperature", "AIR", "DHT22");
   sendDataToFirebase(humidity_dht, "humidity", "AIR", "DHT22");
 
-  // For TDS
+  // For TDS ----------------------------
   float tdsValue;
   loopTDS(tdsValue);
   sendDataToFirebase(tdsValue, "tds", "EAU", "TDS");
 
-  // For PH
+  // For BH ----------------------------
+  float lux;
+  loopBH(lux);
+  Serial.println("");
+  sendDataToFirebase(lux, "luminosity", "AIR", "BH1750");
+
+  // For PH ----------------------------
   if(Serial.available() > 0) { // Vérifie si des données sont disponibles pour être lues depuis le port série
     String pH_data = Serial.readStringUntil('\n'); // Lit la ligne jusqu'à ce qu'un saut de ligne soit reçu
 

@@ -5,6 +5,8 @@ measures_metadata = {
                     'unit': '%'},
     'tds': {'label': 'TDS',
                     'unit': 'ppm'},
+    "luminosity" : {'label': 'Luminosité',
+                    'unit': 'lux'},                   
     'pH': {'label': 'pH',
                     'unit': ''},
 }
